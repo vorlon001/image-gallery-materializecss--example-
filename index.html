@@ -1,0 +1,301 @@
+<html>
+<head>
+    <link href='https://fonts.googleapis.com/icon?family=Material+Icons' rel='stylesheet'>
+    <link rel='stylesheet' href='/materialize.min.css'>
+    <script src='/jquery-3.2.1.min.js'></script>
+    <script src='/materialize.min.js'></script>
+    <link rel='stylesheet' type='text/css' href='//fonts.googleapis.com/css?family=Lobster' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/holder/2.9.4/holder.min.js'></script>
+<style>
+@media only screen and (min-width: 601px) {
+    .container {
+        width: 90%;
+    }
+}
+@media only screen and (min-width: 993px) {
+    .container {
+        width: 85%;
+    }
+}
+img {
+    transition-duration: 1s;
+}  
+img:hover {
+ width:95%;
+}
+.ic { 
+    transition: 1s;
+}
+.ic:hover {
+  -webkit-transform: scale(1.5);   
+  -ms-ransform: scale(1.5);
+  transform: scale(1.5);
+}
+</style>
+</head>
+<body id='global'>
+<div class='container'> 
+<div class='row'>
+<div id='img' class='img center col s12'></div>
+</div>
+</div>
+<script>
+var img= [['xxx-xxx-xxx0'],[['xxx-xxx-xxx1','/t42.jpg','/t42b.jpg',400,300],
+    ['xxx-xxx-xxx2','/t42.jpg','/t42b.jpg',200,300],
+    ['xxx-xxx-xxx3','/t42.jpg','/avroracoon_mainecoon_2.jpg',500,300],
+    ['xxx-xxx-xxx4','/t42.jpg','/avroracoon_mainecoon_2.jpg',300,400],
+    ['xxx-xxx-xxx5','/t42.jpg','/t42b.jpg',300,400],
+    ['xxx-xxx-xxx6','/t42.jpg','/t42b.jpg',300,400],
+    ['xxx-xxx-xxx7','/t42.jpg','/t42b.jpg',400,400],
+    ['xxx-xxx-xxx8','/t42.jpg','/t42b.jpg',400,300],
+    ['xxx-xxx-xxx9','/t42.jpg','/t42b.jpg',400,300],
+    ['xxx-xxx-xxx10','/t42.jpg','/t42b.jpg',400,400],
+    ['xxx-xxx-xxx11','/t42.jpg','/t42b.jpg',1600,900],
+    ['xxx-xxx-xxx12','/t42.jpg','/t42b.jpg',400,300],
+    ['xxx-xxx-xxx13','/t42.jpg','/t42b.jpg',400,300],
+    ['xxx-xxx-xxx14','/t42.jpg','/t42b.jpg',400,300],
+    ['xxx-xxx-xxx15','/t42.jpg','/t42b.jpg',400,300],
+    ['xxx-xxx-xxx16','/t42.jpg','/t42b.jpg',300,400],
+    ['xxx-xxx-xxx17','/t42.jpg','/t42b.jpg',200,200],
+    ['xxx-xxx-xxx18','/t42.jpg','/t42b.jpg',300,400],
+    ['xxx-xxx-xxx19','/t42.jpg','/t42b.jpg',200,200],
+    ]];
+
+(function (window) {
+    'use strict';
+    function dom() {
+
+	this.test = function(a) { console.info(a); return this; }
+
+	this.gid = function (id) { return  document.getElementById(id); }
+	this.gqsa = function(name) { return document.querySelectorAll(name); };
+	this.gqsd = function(name,value) { return this.gqsa("[data-"+name+"='"+value+"']")[0]; }
+	this.sca = function (c,data) { c.appendChild(data); }
+	this.crc = function (c,ne,oe) { c.replaceChild(ne,oe); }
+	this.ce = function  (type) { return document.createElement(type); };
+	this.ceo = function ceo(type,config) {
+	    var vdom = this.ce(type); 
+	    if(config.class!=null) config.class.forEach(function(item, i, img) { vdom.classList.add(item); });
+	    if(config.data!=null) config.data.forEach(function(item, i, img) { vdom.dataset[item['name']]=item['data']; });
+	    if(config.style!=null) vdom.style=config.style;
+	    if(config.height!=null) vdom.height=config.height;
+	    if(config.width!=null) vdom.width=config.width;
+	    if(config.src!=null) vdom.src=config.src;
+	    return vdom;
+	}
+	this.sst = function (c,value) { c.style.transform=value; }
+	this.gsst = function (c) { return c.style.transform; }
+
+	this.img_scaler_calc = function (idom, uuid) {
+	    var img = { value: null };  
+	    var wx = window.innerWidth,
+		wy = window.innerHeight,
+		ix = idom.width+4,
+		iy = idom.height+4,
+		px = idom.offsetLeft,
+		py = idom.offsetTop,
+	        scrollX = window.scrollX,
+	        scrollY = window.scrollY;
+
+	    var scale = Math.min(wx/ix,wy/iy);
+
+	    var npy = - ( py - ( scale * iy - iy ) / 2 ) + ( wy - scale * iy ) / 2 + scrollY;
+	    var npx = - ( px - ( scale * ix - ix ) / 2 ) + ( wx - scale * ix ) / 2 + scrollX;
+
+	    img.value = { img_scale: uuid, scale: scale, npx: npx, npy: npy, scrollX: scrollX, scrollY: scrollY, stg: null };
+	    return [idom, img ];
+	}
+
+	this.img_scaler = function(uuid) {
+	    var idom = this.gqsd('uuid',uuid);
+	    return this.img_scaler_calc(idom,uuid);
+	}
+
+	this.img_open = function(uuid) {
+	    let [idom, img] = this.img_scaler(uuid);
+	    window.dom.img = img;
+	    var style = 'matrix('+img.value.scale+',0,0,'+img.value.scale+','+img.value.npx+','+img.value.npy+')';
+
+	    idom.style.transitionDuration='1s';
+	    this.sst(idom,style);
+	    setTimeout(function(dom) {
+		if(window.dom.img.value.img_scale!=null) {
+	    	    dom.src=dom.dataset.urlB;
+		}
+	    },200,idom);
+	}
+
+	this.img_close = function(uuid) {
+	    var idom = this.gqsd('uuid',uuid);
+	    idom.style.visibility = 'visible';
+	    this.sst(idom,'none');
+	    idom.style.transitionDuration = '1s';
+	    setTimeout(function(dom) {
+		dom.src=dom.dataset.urlS;
+	    },500,idom);
+	    setTimeout(function(dom) {
+		dom.style.transitionDuration = '0s';
+	    },1000,idom);
+	    window.dom.img.value.img_scale = null;
+	}
+
+    }
+
+
+
+    window.core = window.core || {};
+    window.core.dom = dom;
+}(window));
+
+(function (window) {
+
+    'use strict';
+    var gen_img = function(max,border,img_cfg) {
+	var img = img_cfg[1];
+	window.dom.config = img;
+	var limit_small = 600;
+	function gen(max,boarder,img) {
+	    function zeon(start,f,max,boarder,img) { 
+		function morfius(start,delta,max,img) { 
+		    var d,i,x,y,size_y; 
+		    size_y = (i = img.slice(start, start + delta).map(function(num)  { return [num[0],num[1],num[2],num[3]/num[4]];})) 
+			     .reduce(function(sum, num) { return sum + num[3]; }, 0);      
+		    d = i.map(function(num)  { 
+    			return {uuid: num[0],urlS: num[1], urlB: num[2], x: (x = (max*(num[3]/size_y))), y: (y = x/num[3])}
+    		    }); 
+		    return {size: delta, img: d, y: d[0].y }
+		}
+		var maxx, maxy, ramka=[],ramka_y=[];
+		switch (f) {
+		    case 1: maxy=max; maxx=max-boarder; break;
+		    case 2: maxy=max; maxx=max-boarder; break;
+		    case 3: maxy=max/2; maxx=max-boarder; break;
+		    case 4: maxy=max/2; maxx=max-boarder; break;
+		} 
+		if(f!==4) for(var j=0;j<f;j++) ramka_y[j] = (ramka[j]=morfius(start,j+1,maxx,img)).y;
+		else ramka_y[0] = (ramka[0]=morfius(start,4,maxx,img)).y;
+		return ramka[ramka_y.indexOf(Math.min.apply(null, ramka_y.map(function(num) { return (num<=maxy)?num:999999999;})))];
+	    }
+	    var f,w=0,img_galley=[];
+	    while (w < img.length) {  
+		var img_slice = zeon(w,
+		    (window.innerWidth<=limit_small)?(((f=(img.length-w))<=3)?((f==3)?3:f):3):(((f=(img.length-w))<=4)?((f==4)?4:f):3)
+		    ,max,boarder,img); 
+    		w+=img_slice.size; 
+		img_galley.push(img_slice);
+	    }
+	    return img_galley;
+	}
+
+	var vdom = dom.ceo('div',{class:['col','s12'], data: [{name:'uuid', data:img_cfg[0]}] });
+	gen(max,border,img).forEach(function(item, i, img) {
+	    var vdomi = dom.ceo('div',{ class:['col','s12']});
+	    item.img.forEach(function(item, i, img) {
+    		var x = dom.ceo('IMG', {'src': item.urlS, data: [
+								{name:'uuid', data: item.uuid},
+								{name:'urlS', data: item.urlS},
+								{name:'urlB', data: item.urlB}
+							    ],
+					style: 'height: '+item.y+'px; width: '+item.x+'px; padding: 0px; border: 2px solid #ffffff; transition-duration: 0s; visibility: visible;'});
+		vdomi.appendChild(x);
+	    });
+	    vdom.appendChild(vdomi);
+	});    
+	return vdom;
+    }
+
+    var init_event = function(img) {
+	window.addEventListener('resize', function() {
+	    var vdom_img_old = window.vdom.img;
+	    window.vdom.img = core.gen_img(dom.gid('img').offsetWidth*0.80,6,img)
+	    var iv = window.dom.img.value; 
+	    var imgs,idom;
+	    window.dom.crc(dom.gid('img'), vdom.img, vdom_img_old);
+	    var i = window.dom.img;
+	    core.add_event(img);
+	    window.dom.img = i;
+	    if(iv.img_scale!=null && iv.img_scale!='none') { 
+        	var idoms = window.vdom.img.querySelectorAll('[data-uuid='+window.dom.img.value.img_scale+']')[0];
+		setTimeout(function(idom){
+        	    [idom, imgs] = window.dom.img_scaler_calc(idoms, window.dom.img.value.img_scale);
+		    var style = 'matrix('+imgs.value.scale+',0,0,'+imgs.value.scale+','+imgs.value.npx+','+imgs.value.npy+')';
+	    	    window.dom.img = imgs;
+		    idom.style.transform=style;
+		    idom.src=idom.dataset.urlB;
+		},40,idom);
+	    }
+	});
+    }
+
+    var add_event = function(img) {
+	img[1].forEach(function(element) {
+	    window.dom.img = {};
+	    window.dom.img.value={ img_scale: null, stg: null };
+	    var idom = dom.gqsd('uuid',element[0]);
+	    idom.addEventListener('click', function(event) {
+		if(window.dom.gsst(this).length==0 || window.dom.gsst(this)=='none') { 
+		    if(window.dom.img.value.img_scale!=null)
+		    { 	
+			window.dom.img_close(window.dom.img.value.img_scale);
+			setTimeout(function(uuid) { 
+			    window.dom.img.value.img_scale=uuid; 
+			    window.dom.img_open(uuid);
+			},1000,this.dataset.uuid);
+		    } else window.dom.img_open(this.dataset.uuid); 
+		    window.dom.img.value.img_scale=this.dataset.uuid; 
+		} else {
+		    window.dom.img_close(this.dataset.uuid);
+		    window.dom.img.value.img_scale=null;
+		}
+    	    });
+	})
+    }
+
+    var scroll_event = function() {
+	var iv = window.dom.img.value; 
+	if(iv.img_scale!=null && iv.img_scale!='none') { 
+    	    var idom = dom.gqsd('uuid',iv.img_scale);
+
+	    var wx = window.innerWidth,
+		wy = window.innerHeight,
+		ix = idom.width+4,
+		iy = idom.height+4,
+		px = idom.offsetLeft,
+		py = idom.offsetTop,
+        	scrollX = window.scrollX,
+        	scrollY = window.scrollY;
+
+    	    var scale = Math.min(wx/ix,wy/iy);
+
+    	    var npy = - ( py - ( scale * iy - iy ) / 2 ) + ( wy - scale * iy ) / 2 + scrollY;
+    	    var npx = - ( px - ( scale * ix - ix ) / 2 ) + ( wx - scale * ix ) / 2 + scrollX;
+
+	    iv.scale = scale, iv.npy = npy, iv.npx = npx, iv.scrollY = scrollY, iv.scrollX = scrollX;
+	    var style = 'matrix('+iv.scale+',0,0,'+iv.scale+','+iv.npx+','+iv.npy+')';
+    	    window.dom.sst(idom,style);
+	}
+    }
+    window.vdom = window.vdom || {};
+    window.vdom.img = null;
+    window.core = window.core || {};
+    window.core.gen_img = gen_img;
+    window.core.add_event = add_event;
+    window.core.init_event = init_event;
+    window.core.scroll_event = scroll_event;
+
+}(window));
+
+document.addEventListener('DOMContentLoaded', function(event) {
+    window.dom  = new core.dom();
+    dom.sca(dom.gid('img'),(window.vdom.img = core.gen_img(dom.gid('img').offsetWidth*0.80,6,img)));
+    core.init_event(img);
+    core.add_event(img);
+    window.onscroll = function() {
+	core.scroll_event(); 
+    }
+});
+
+
+</script>
+</body>
+</html>
